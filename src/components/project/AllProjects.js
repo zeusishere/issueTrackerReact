@@ -18,8 +18,6 @@ class AllProjects extends Component {
     super(props);
     this.state = {
       currentPage: 1,
-      totalPages: null,
-      totalItems: null,
       itemsPerPage: 10,
       havePagesLoaded: false,
     };
@@ -43,6 +41,8 @@ class AllProjects extends Component {
     let { projects } = this.props.projects;
     const indexOfLastItem = this.state.currentPage * this.state.itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - this.state.itemsPerPage;
+    const totalItems = projects.length;
+    const totalPages = Math.ceil(totalItems / this.state.itemsPerPage);
     let projectsOnCurrentPage = projects.slice(
       indexOfFirstItem,
       indexOfLastItem
@@ -119,7 +119,7 @@ class AllProjects extends Component {
         </Row>
         {projectList.length > 0 && (
           <Row>
-            <Col xs={12}>
+            <Col xs={12} style={{ minHeight: "440px" }}>
               <Table hover size="sm">
                 <thead className="text-center">
                   <tr>
@@ -135,11 +135,13 @@ class AllProjects extends Component {
             </Col>
           </Row>
         )}
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={this.state.totalPages}
-          setCurrentPage={this.onClickSetCurrentPageInState}
-        />
+        {projectList.length > 0 && (
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={this.onClickSetCurrentPageInState}
+          />
+        )}
       </Container>
     );
   }

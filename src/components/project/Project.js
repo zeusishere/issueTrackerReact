@@ -116,11 +116,16 @@ function Project(props) {
       </Row>
       <Row className="mb-2 mt-3 ms-1">
         <Col>
-          <h5 className="text-muted d-inline-block text-capitalize">
+          {/* <h5 className="text-muted d-inline-block text-capitalize">
             Project Author :{" "}
             {currentProject.projectAuthor &&
               currentProject.projectAuthor.userName}
-          </h5>
+          </h5> */}
+          <Badge rounded bg="dark" className="py-2 fs-6 text-capitalize">
+            Project Author :{" "}
+            {currentProject.projectAuthor &&
+              currentProject.projectAuthor.userName}
+          </Badge>
         </Col>
         <Col className="text-end">
           <h5 className="text-muted d-inline-block">members :</h5>
@@ -180,11 +185,11 @@ function Project(props) {
       </Row>
 
       {areIssuesPresent && (
-        <Row>
+        <Row id="yoyo">
           <Table hover size="sm">
             <thead>
               <tr>
-                <th>#</th>
+                <th className="text-center">#</th>
                 <th className="text-center">Issue Type</th>
                 <th className="text-center">Issue</th>
                 <th className="text-center">Assignee</th>
@@ -196,6 +201,7 @@ function Project(props) {
               </tr>
             </thead>
             <tbody>
+              {/*  */}
               {issues &&
                 issues.map((issue, index) => {
                   return (
