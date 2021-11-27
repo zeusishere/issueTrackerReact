@@ -54,14 +54,19 @@ class SignUp extends Component {
     let { error, isLoggedin } = this.props.auth;
 
     if (isLoggedin) {
-      return <Navigate to="/" />;
+      return <Navigate to="/all-projects" />;
     }
     return (
-      <Container>
+      <Container style={{ marginTop: "16%" }}>
+        <Row>
+          <h1 className="text-center mb-5 mt-3">
+            Sign Up to keep a track of your Work !
+          </h1>
+        </Row>
         <Row>
           <Col sm={{ span: 6, offset: 3 }}>
             {this.state.formError ? (
-              <p className="bg-warning py-2  text-center">
+              <p className="alert alert-danger py-2 text-center">
                 {this.state.formError}
               </p>
             ) : null}

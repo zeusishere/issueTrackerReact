@@ -56,7 +56,7 @@ export function login(email, password) {
           dispatch(loginSuccessful(data.user));
           return;
         }
-        //  if loginfails
+        //  if login fails
         dispatch(loginFailed(data.message));
       });
   };
@@ -79,6 +79,8 @@ export function signUp(email, userName, password1, password2) {
         console.log("sign up data is after req ", data);
         if (data.success) {
           dispatch(signUpSuccessful(data.user));
+          localStorage.setItem("token", data.token);
+
           return;
         }
         dispatch(signUpFailed(data.message));

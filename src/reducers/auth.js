@@ -13,6 +13,7 @@ import {
 const initialAuthState = {
   user: {},
   error: null,
+
   isLoggedin: false,
   isAuthenticationInProgess: false,
 };

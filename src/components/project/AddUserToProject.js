@@ -8,7 +8,14 @@ import {
   Col,
   InputGroup,
   Table,
+  Alert,
 } from "react-bootstrap";
+import { connect } from "react-redux";
+import {
+  addNewProjectFromDatabaseToStore,
+  updateCurrentProjectInStore,
+  updateReqInfoReturnedFromServer,
+} from "../../actions/actionCreators/project";
 import { APIUrls } from "../../helpers/urls";
 const selected = "bg-info";
 class AddUserToProject extends Component {
@@ -29,6 +36,7 @@ class AddUserToProject extends Component {
       usersSelectedToAddToProject: [],
       usersFromDB: [],
     });
+    this.props.dispatch(updateReqInfoReturnedFromServer("", ""));
   };
   handleShow = () => {
     this.setState({ show: true });
@@ -50,6 +58,13 @@ class AddUserToProject extends Component {
           this.setState({ usersFromDB: data.users }, () =>
             console.log(this.state)
           );
+          if (data.users.length == 0)
+            this.props.dispatch(
+              updateReqInfoReturnedFromServer(
+                false,
+                "No users matching search query were found in the database  "
+              )
+            );
         }
       });
   };
@@ -87,7 +102,15 @@ class AddUserToProject extends Component {
       body: JSON.stringify({ users, projectID: this.props.projectID }),
     })
       .then((response) => response.json())
-      .then((data) => console.log("data", data));
+      .then((data) => {
+        console.log("data", data);
+        if (data.success) {
+          this.props.dispatch(updateCurrentProjectInStore(data.project));
+          this.props.dispatch(
+            updateReqInfoReturnedFromServer(data.success, data.message)
+          );
+        }
+      });
   };
   updateFieldOnUserinput = (event) => {
     let fieldName = event.target.getAttribute("name");
@@ -99,6 +122,8 @@ class AddUserToProject extends Component {
   };
   render() {
     let { usersFromDB } = this.state;
+    let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
+      this.props.reqStatusInfo;
     // console.log("render::::: ", this.state);
     // console.log("pid", this.props.projectID);
     return (
@@ -128,6 +153,17 @@ class AddUserToProject extends Component {
                 {this.state.formError}
               </p>
             ) : null}
+            {reqStatusReturnedFromServer === true ? (
+              <Alert variant="success" className="text-center mt-5">
+                Project Successfully Added To Database{" "}
+              </Alert>
+            ) : reqStatusReturnedFromServer === false ? (
+              <Alert variant="warning" className="text-center mt-5">
+                {reqMessageReturnedFromServer}
+              </Alert>
+            ) : (
+              ""
+            )}
 
             <Form.Group className="mb-3" controlId="issueName">
               <Form.Label>Enter user's Email</Form.Label>
@@ -200,4 +236,17 @@ class AddUserToProject extends Component {
   }
 }
 
-export default AddUserToProject;
+// export default AddUserToProject;
+const mapStateToProps = (state) => {
+  let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
+    state.projects;
+
+  return {
+    currentProject: state.projects.currentProject,
+    reqStatusInfo: {
+      reqStatusReturnedFromServer,
+      reqMessageReturnedFromServer,
+    },
+  };
+};
+export default connect(mapStateToProps)(AddUserToProject);

@@ -3,6 +3,7 @@ import {
   ADD_NEW_PROJECT_FROM_DATABASE_TO_STORE,
   GET_ALL_PROJECTS_FROM_DATABASE,
   UPDATE_CURRENT_PROJECT_IN_STORE,
+  UPDATE_REQ_INFO_RETURNED_FROM_SERVER,
 } from "../actions/actionTypes/project";
 
 const initialProjectsState = {
@@ -18,6 +19,8 @@ const initialProjectsState = {
     //   __v: 0,
     //   _id: "",
   },
+  reqStatusReturnedFromServer: "",
+  reqMessageReturnedFromServer: null,
 };
 export default function projects(state = initialProjectsState, action) {
   switch (action.type) {
@@ -38,6 +41,13 @@ export default function projects(state = initialProjectsState, action) {
         ...state,
         currentProject: action.project,
       };
+    case UPDATE_REQ_INFO_RETURNED_FROM_SERVER:
+      return {
+        ...state,
+        reqStatusReturnedFromServer: action.reqStatus,
+        reqMessageReturnedFromServer: action.reqMessage,
+      };
+
     default:
       return state;
   }

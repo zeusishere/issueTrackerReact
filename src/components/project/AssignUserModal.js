@@ -9,6 +9,7 @@ class AssignUserModal extends Component {
     this.state = {
       show: false,
       newIssueAssignee: "",
+      isMouseOver: false,
     };
   }
   handleClose = () => {
@@ -34,15 +35,57 @@ class AssignUserModal extends Component {
       updateIssueInDatabase(this.state.newIssueAssignee, this.props.issueID)
     );
   };
+  onMouseEnterSetIsMouseOverToTrue = () => {
+    this.setState({ isMouseOver: true });
+  };
+  onMouseExitSetIsMouseOverToFalse = () => {
+    this.setState({ isMouseOver: false });
+  };
   render() {
     console.log("props are ", this.state);
     let { projectMembers } = this.props.currentProject;
     let { assignee } = this.props;
     return (
       <React.Fragment>
-        <div variant="outline-primary" size="sm" onClick={this.handleShow}>
-          {" "}
-          {this.props.assignee ? this.props.assignee.userName : "Assign User"}
+        <div
+          variant="outline-primary"
+          size="sm"
+          className="text-capitalize"
+          onClick={this.handleShow}
+          onMouseEnter={this.onMouseEnterSetIsMouseOverToTrue}
+          onMouseOut={this.onMouseExitSetIsMouseOverToFalse}
+        >
+          {/* <span
+            className={
+              this.state.isMouseOver ? "bg-secondary text-light " : " "
+            }
+          > */}
+          <div
+            className={
+              this.state.isMouseOver
+                ? "bg-dark bg-gradient text-light rounded-pill "
+                : "rounded-pill"
+            }
+          >
+            {" "}
+            {this.props.assignee
+              ? this.props.assignee.userName
+              : "Assign User"}{" "}
+            <div
+              className={
+                this.state.isMouseOver ? "d-inline-block  " : " d-inline-block"
+              }
+              style={{
+                visibility: `${this.state.isMouseOver ? "visible" : "hidden"}`,
+              }}
+            >
+              ^
+            </div>
+          </div>
+          {/* {this.props.assignee ? this.props.assignee.userName : "Assign User"}{" "} */}
+          {/* </span> */}
+
+          {/* {this.state.isMouseOver ? "^" : ""} */}
         </div>
 
         <Modal
@@ -65,19 +108,16 @@ class AssignUserModal extends Component {
                 {this.state.formError}
               </p>
             ) : null}
-            Currently assigned to : {assignee ? assignee.userName : " None"}{" "}
+            <p className="text-capitalize">
+              Currently assigned to : {assignee ? assignee.userName : " None"}
+            </p>
             <Form.Select onChange={this.updateNewIssueAssigneeOnChange}>
               {projectMembers.map((user) => {
                 return <option value={user._id}> {user.userName} </option>;
               })}
             </Form.Select>
             <div className="text-center my-2">
-              <Button
-                disabled={this.state.newIssueAssignee === "" ? true : false}
-                onClick={this.onSubmitUpdateIssueOnServer}
-              >
-                Assign
-              </Button>
+              <Button onClick={this.onSubmitUpdateIssueOnServer}>Assign</Button>
             </div>
           </Modal.Body>
         </Modal>

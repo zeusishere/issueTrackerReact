@@ -1,8 +1,12 @@
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { addProjectToDatabase } from "../../actions/actionCreators/project";
-const formErrorInput = "Enter Valid Details";
+import {
+  addProjectToDatabase,
+  updateReqInfoReturnedFromServer,
+} from "../../actions/actionCreators/project";
+import { UPDATE_REQ_INFO_RETURNED_FROM_SERVER } from "../../actions/actionTypes/project";
+const formErrorInput = "Please Enter Valid Project Details";
 class AddNewProject extends Component {
   constructor(props) {
     super(props);
@@ -16,6 +20,7 @@ class AddNewProject extends Component {
   handleClose = () => {
     console.log("handle close ", this.state);
     this.setState({ show: false, formError: false });
+    this.props.dispatch(updateReqInfoReturnedFromServer("", ""));
   };
   handleShow = () => {
     this.setState({ show: true });
@@ -47,6 +52,8 @@ class AddNewProject extends Component {
       : this.setState({ formError: formErrorInput });
   };
   render() {
+    let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
+      this.props.reqStatusInfo;
     return (
       <React.Fragment>
         <div className="text-end me-2 my-4">
@@ -74,6 +81,18 @@ class AddNewProject extends Component {
                 {this.state.formError}
               </p>
             ) : null}
+            {reqStatusReturnedFromServer === true ? (
+              <Alert variant="success" className="text-center mt-5">
+                Project Successfully Added To Database{" "}
+              </Alert>
+            ) : reqStatusReturnedFromServer === false ? (
+              <Alert variant="warning" className="text-center mt-5">
+                There was an error while adding Project. Try again
+              </Alert>
+            ) : (
+              ""
+            )}
+
             <h4>Project Details</h4>
             <Form.Group className="mb-3" controlId="projectName">
               <Form.Label>Project Name</Form.Label>
@@ -111,8 +130,14 @@ class AddNewProject extends Component {
   }
 }
 const mapStateToProps = (state) => {
+  let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
+    state.projects;
   return {
     auth: state.userAuth,
+    reqStatusInfo: {
+      reqStatusReturnedFromServer,
+      reqMessageReturnedFromServer,
+    },
   };
 };
 export default connect(mapStateToProps)(AddNewProject);

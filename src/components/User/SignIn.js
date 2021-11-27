@@ -57,11 +57,13 @@ class SignIn extends Component {
     // redirect logic
     if (isLoggedin) {
       console.log("singn in privRoutet ", isLoggedin);
-      return <Navigate to="/" />;
+      return <Navigate to="/all-projects" />;
     }
     return (
-      <Container>
-        {console.log("rendered sign in component")}
+      <Container style={{ marginTop: "16%" }}>
+        <Row>
+          <h1 className="text-center mb-5 mt-3">Sign in to view your work !</h1>
+        </Row>
         <Row>
           <Col sm={{ span: 6, offset: 3 }}>
             {/* validation error */}
@@ -74,7 +76,7 @@ class SignIn extends Component {
             {error && (
               <p className="alert alert-danger py-2 text-center">{error}</p>
             )}
-            <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Group className="mb-4" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 type="email"
@@ -82,12 +84,12 @@ class SignIn extends Component {
                 name="email"
                 onChange={this.updateEmailOnUserInput}
               />
-              <Form.Text className="text-muted">
+              <Form.Text className="text-muted ">
                 We'll never share your email with anyone else.
               </Form.Text>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Group className="mb-4" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"

@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
-import { addCurrentProjectInDatabase } from "../../actions/actionCreators/project";
+import {
+  addCurrentProjectInDatabase,
+  updateReqInfoReturnedFromServer,
+} from "../../actions/actionCreators/project";
 
 class AddNewIssue extends Component {
   constructor(props) {
@@ -11,7 +14,7 @@ class AddNewIssue extends Component {
       formError: "",
       issueName: "",
       issueDescription: "",
-      label: "",
+      label: "Bug",
       issuePriority: "Normal",
       issueDueDate: "",
       //   to be made functional later
@@ -21,17 +24,23 @@ class AddNewIssue extends Component {
   handleClose = () => {
     // console.log("handle close ", this.state);
     this.setState({ show: false, formError: false });
+    this.props.dispatch(updateReqInfoReturnedFromServer("", ""));
   };
   handleShow = () => {
     this.setState({ show: true });
   };
   updateFieldOnUserinput = (event) => {
     let fieldName = event.target.getAttribute("name");
-    // console.log("fieldname ", fieldName);
     //  used es6 computed file name
-    this.setState({ [fieldName]: event.target.value });
+    this.setState({ [fieldName]: event.target.value }, () =>
+      console.log(this.state)
+    );
   };
+
   OnClickSubmitIssueDetailsToServer = () => {
+    let validateFormField = (formField) => {
+      return formField.length > 0;
+    };
     let {
       issueName,
       issueDescription,
@@ -40,29 +49,32 @@ class AddNewIssue extends Component {
       issueDueDate,
       issueAssignee,
     } = this.state;
-    // console.log(
-    //   issueName,
-    //   issueDescription,
-    //   label,
-    //   issuePriority,
-    //   issueDueDate,
-    //   issueAssignee
-    // );
-    this.props.dispatch(
-      addCurrentProjectInDatabase(
-        {
-          issueName,
-          issueDescription,
-          label,
-          issuePriority,
-          issueDueDate,
-          issueAssignee,
-        },
-        this.props.projectID
-      )
-    );
+
+    let areIssueDetailsValid =
+      validateFormField(issueName) &&
+      validateFormField(issuePriority) &&
+      validateFormField(issueDueDate)
+        ? (() => {
+            this.props.dispatch(
+              addCurrentProjectInDatabase(
+                {
+                  issueName,
+                  issueDescription,
+                  label,
+                  issuePriority,
+                  issueDueDate,
+                  issueAssignee,
+                },
+                this.props.projectID
+              )
+            );
+            this.setState({ formError: "" });
+          })()
+        : this.setState({ formError: "Please enter valid details" });
   };
   render() {
+    let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
+      this.props.projects;
     return (
       <React.Fragment>
         <div className="text-end me-2 my-4">
@@ -90,6 +102,18 @@ class AddNewIssue extends Component {
                 {this.state.formError}
               </p>
             ) : null}
+            {reqStatusReturnedFromServer === true ? (
+              <Alert variant="success" className="text-center mt-5">
+                Project Successfully Added To Database{" "}
+              </Alert>
+            ) : reqStatusReturnedFromServer === false ? (
+              <Alert variant="warning" className="text-center mt-5">
+                There was an error while adding Project. Try again
+              </Alert>
+            ) : (
+              ""
+            )}
+
             <h4>Project Details</h4>
             <Form.Group className="mb-3" controlId="issueName">
               <Form.Label>Issue Name</Form.Label>
@@ -111,20 +135,25 @@ class AddNewIssue extends Component {
               />
             </Form.Group>
             <Row>
-              {/* <Col>
-                <Form.Group className="mb-3" controlId="formGroupEmail">
-                  <Form.Label>Issue Typedsdsd</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Issue Type"
-                    name="issueType"
-                  />
-                </Form.Group> */}
-              {/* </Col> */}
               <Col>
                 <Form.Group className="mb-3" controlId="label">
-                  <Form.Label>Label :</Form.Label>
-                  <Form.Select name="label" disabled>
+                  <Form.Label>Issue Type</Form.Label>
+                  <Form.Select
+                    placeholder="Enter Issue Type"
+                    name="label"
+                    onChange={this.updateFieldOnUserinput}
+                  >
+                    <option value="Bug">Bug</option>
+                    <option value="Task">Task</option>
+                    <option value="Bug">Bug</option>
+                    <option value="Security">Security</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group className="mb-3" controlId="label">
+                  <Form.Label>Status :</Form.Label>
+                  <Form.Select name="status" disabled>
                     <option value="Open">Open</option>
                   </Form.Select>
                 </Form.Group>

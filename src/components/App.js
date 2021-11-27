@@ -9,7 +9,8 @@ import Sidebar from "./universalUi/Sidebar";
 import { connect } from "react-redux";
 import { authenticateUser } from "../actions/actionCreators/auth";
 class App extends Component {
-  componentDidMount() {
+  componentWillMount() {
+    console.log("First this called");
     const tokenFromLocalStorage = localStorage.getItem("token");
     if (tokenFromLocalStorage) {
       // console.log("app did mount token is ", jwt_decode(tokenFromLocalStorage));
@@ -21,11 +22,25 @@ class App extends Component {
       this.props.dispatch(authenticateUser(user));
     }
   }
+  // componentDidMount() {
+  //   const tokenFromLocalStorage = localStorage.getItem("token");
+  //   if (tokenFromLocalStorage) {
+  //     // console.log("app did mount token is ", jwt_decode(tokenFromLocalStorage));
+  //     const decodedToken = jwt_decode(tokenFromLocalStorage);
+  //     let user = (({ userName, email, sub: _id }) => {
+  //       return { userName, email, _id };
+  //     })(decodedToken);
+
+  //     this.props.dispatch(authenticateUser(user));
+  //   }
+  // }
   render() {
     return (
       <Router>
         <div className="App">
-          <NavbarComponent />
+          <nav className="fixed-top">
+            <NavbarComponent />
+          </nav>
           {/* <Sidebar /> */}
           {/* all components will be rendered inside main-content */}
           <MainContent />

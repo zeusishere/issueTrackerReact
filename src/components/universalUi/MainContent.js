@@ -16,10 +16,10 @@ import SignUp from "../User/SignUp";
 // import PrivateRoute from "../User/PrivateRoute";
 import { connect } from "react-redux";
 
-function PrivateRoute({ children, isLoggedin }) {
-  console.log("PrivateRoute 111111111111", isLoggedin);
-  return isLoggedin ? children : <Navigate to="/dashboard" />;
-}
+// function PrivateRoute({ children, isLoggedin }) {
+//   console.log("PrivateRoute 111111111111", isLoggedin);
+//   return isLoggedin ? children : <Navigate to="/dashboard" />;
+// }
 let MainContentComp = () => {
   return (
     <p>
@@ -77,7 +77,6 @@ class MainContent extends Component {
             <Col lg={{ span: 10, offset: 1 }}>
               <Routes>
                 <Route path="/about" element={<About />}></Route>
-
                 <Route path="/main" element={<MainContentComp />}></Route>
                 <Route path="/dashboard" element={<DashBoard />}></Route>
                 <Route path="/all-projects" element={<AllProjects />}></Route>

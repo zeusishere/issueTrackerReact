@@ -5,6 +5,7 @@ import {
   ADD_PROJECT_TO_DATABASE,
   UPDATE_CURRENT_PROJECT_IN_STORE,
   ADD_ISSUE_TO_PROJECT_IN_DATABASE,
+  UPDATE_REQ_INFO_RETURNED_FROM_SERVER,
 } from "../actionTypes/project";
 import { getFormBody } from "../../helpers/utils";
 
@@ -50,7 +51,9 @@ export function addProjectToDatabase({ projectName, projectDescription }) {
       })
       .then((data) => {
         console.log("addProjectTodatabase  #####", data);
-        dispatch(addNewProjectFromDatabaseToStore(data.project));
+        dispatch(updateReqInfoReturnedFromServer(data.success, data.message));
+        if (data.success)
+          dispatch(addNewProjectFromDatabaseToStore(data.project));
       });
   };
 }
@@ -110,6 +113,7 @@ export function addCurrentProjectInDatabase(issue, projectID) {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        dispatch(updateReqInfoReturnedFromServer(data.success, data.message));
         if (data.success) {
           if (data.success) dispatch(updateCurrentProjectInStore(data.project));
         }
@@ -135,5 +139,17 @@ export function updateIssueInDatabase(issueAssignee, issueID) {
         console.log("data is", data);
         dispatch(updateCurrentProjectInStore(data.project));
       });
+  };
+}
+// action CREATOR to update  reqStatusReturnedFromServer: "", reqMessageReturnedFromServer: null,
+
+export function updateReqInfoReturnedFromServer(
+  reqStatus = false,
+  reqMessage = "dummy message"
+) {
+  return {
+    type: UPDATE_REQ_INFO_RETURNED_FROM_SERVER,
+    reqStatus,
+    reqMessage,
   };
 }

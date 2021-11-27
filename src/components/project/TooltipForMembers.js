@@ -29,7 +29,7 @@ function TooltipForMembers(props) {
           color: "white",
         }}
       >
-        {tooltipMessage.substring(0, 1)}
+        {tooltipMessage && tooltipMessage.substring(0, 1)}
       </div>
     </OverlayTrigger>
   );

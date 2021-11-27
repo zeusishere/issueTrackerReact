@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Table, Tooltip } from "react-bootstrap";
+import { Container, Row, Col, Table, Tooltip, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { Navigate } from "react-router";
 import {
   getAllProjectsFromDatabase,
   updateCurrentProjectInStore,
@@ -9,23 +10,47 @@ import {
 import AddNewProject from "./AddNewProject";
 import TooltipForMembers from "./TooltipForMembers";
 import writer from "./public/writer.png";
+import man from "./public/man.png";
+import PaginationComponent from "./PaginationComponent";
 
 class AllProjects extends Component {
-  componentDidMount() {
-    console.log("all projects");
-    this.props.dispatch(getAllProjectsFromDatabase());
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPage: 1,
+      totalPages: null,
+      totalItems: null,
+      itemsPerPage: 10,
+      havePagesLoaded: false,
+    };
   }
-  // style="text-overflow:ellipsis;white-space: nowrap;
-  //                overflow: hidden;"
-  // onClickUpdateCurrentProjectInStore = (event) => {
-  //   let projectId = event.target.getAttribute("data-project-id");
-  //   let projects = this.props.projects.projects;
-  //   let currentProject = projects.find((project) => project._id === projectId);
-  //   this.props.dispatch(updateCurrentProjectInStore(currentProject));
-  // };
+  componentDidMount() {
+    this.props.dispatch(getAllProjectsFromDatabase());
+    this.setState((state) => {
+      return {
+        totalItems: this.props.projects.length,
+        totalPages: Math.ceil(this.props.projects.length / state.itemsPerPage),
+      };
+    });
+  }
+  onClickSetCurrentPageInState = (pageNumber) => {
+    this.setState({ currentPage: pageNumber });
+  };
   render() {
+    let { currentPage } = this.state;
+    let auth = this.props.auth;
+    console.log("auth is  ", this.props.auth, auth && !auth.isLoggedin);
     let { projects } = this.props.projects;
-    let projectList = projects.map((project, index) => {
+    const indexOfLastItem = this.state.currentPage * this.state.itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - this.state.itemsPerPage;
+    let projectsOnCurrentPage = projects.slice(
+      indexOfFirstItem,
+      indexOfLastItem
+    );
+    console.log("slice   ", projectsOnCurrentPage);
+    let projectList = projectsOnCurrentPage.map((project, index) => {
+      // to deal with accessing properties of undefined
+      if (project == undefined) return "";
       let {
         projectName,
         projectAuthor,
@@ -34,81 +59,87 @@ class AllProjects extends Component {
         projectMembers,
         updatedAt,
       } = project;
-      console.log("individual projectMembers are  ", projectMembers);
       let updatedAtDate = new Date(updatedAt);
       return (
-        <tbody key={index}>
-          <tr>
-            <td>{index + 1}</td>
-            <td
-            // data-project-id={_id}
-            // onClick={this.onClickUpdateCurrentProjectInStore}
-            >
-              <Link
-                to={`/project/id/${_id}`}
-                data-project-id={_id}
-                // onClick={this.onClickUpdateCurrentProjectInStore}
-              >
-                {projectName}
-              </Link>
-            </td>
-            <td
-              style={{
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-              }}
-            >
-              {updatedAtDate.toDateString()}
-            </td>
-            <td>
-              <div style={{ display: "inline-block" }} className="mx-1">
-                <img src={writer} style={{ width: "30px" }} />
-              </div>
-
-              {projectAuthor.userName}
-            </td>
-            <td>
-              {projectMembers.map((user, index) => {
-                console.log("name is========", user.userName);
-                return (
-                  <div style={{ display: "inline-block" }} className="mx-1">
-                    <TooltipForMembers
-                      tooltipMessage={user.userName}
-                      key={index}
-                    />
-                  </div>
-                );
-              })}
-            </td>
-          </tr>
-        </tbody>
+        <tr key={index}>
+          <td className="text-center">{index + 1}</td>
+          <td className="text-center">
+            <Link to={`/project/id/${_id}`} data-project-id={_id}>
+              {projectName}
+            </Link>
+          </td>
+          <td className="text-center">{updatedAtDate.toDateString()}</td>
+          <td className="text-center">
+            <div style={{ display: "inline-block" }} className="mx-1">
+              <img src={writer} style={{ width: "30px" }} />
+            </div>
+            {projectAuthor.userName}
+          </td>
+          <td>
+            {projectMembers.slice(0, 5).map((user, index) => {
+              return (
+                <div style={{ display: "inline-block" }} className="mx-1">
+                  <TooltipForMembers
+                    tooltipMessage={user.userName}
+                    key={index}
+                  />
+                </div>
+              );
+            })}
+          </td>
+        </tr>
       );
     });
+    if (auth && !auth.isLoggedin) {
+      console.log(
+        "singn in privRoutet $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ "
+      );
+      return <Navigate to="/user/sign-in" />;
+    }
     return (
-      <Container>
+      <Container
+        style={{ marginTop: "16%" }}
+        className="border  border-dark rounded "
+      >
         <Row>
+          <h1>Projects</h1>
+        </Row>
+        <Row>
+          {projectList.length <= 0 && (
+            <Col xs={12}>
+              <Alert variant="warning" className="text-center mt-5">
+                There are no Projects to view ! <br />
+                Create new Projects or get added to Projects of others .
+              </Alert>
+            </Col>
+          )}
           <Col>
             <AddNewProject />
           </Col>
         </Row>
-        <Row>
-          <Col xs={12}>
-            <Table bordered hover responsive>
-              <thead className="bg-dark text-light">
-                <tr>
-                  <th>#</th>
-                  <th>Project</th>
-                  <th>Updated At</th>
-                  <th>Author</th>
-                  <th>Members</th>
-                </tr>
-              </thead>
-              {/* renders list of tables */}
-              {projectList}
-            </Table>
-          </Col>
-        </Row>
+        {projectList.length > 0 && (
+          <Row>
+            <Col xs={12}>
+              <Table hover size="sm">
+                <thead className="text-center">
+                  <tr>
+                    <th>#</th>
+                    <th>Project</th>
+                    <th>Updated At</th>
+                    <th>Author</th>
+                    <th className="text-start">Members</th>
+                  </tr>
+                </thead>
+                <tbody>{projectList}</tbody>
+              </Table>
+            </Col>
+          </Row>
+        )}
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={this.state.totalPages}
+          setCurrentPage={this.onClickSetCurrentPageInState}
+        />
       </Container>
     );
   }

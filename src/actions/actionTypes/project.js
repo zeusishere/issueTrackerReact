@@ -18,3 +18,7 @@ export const ADD_ISSUE_TO_PROJECT_IN_DATABASE =
   "ADD_ISSUE_TO_PROJECT_IN_DATABASE";
 export const UPDATE_ASSIGNEE_FOR_ISSUE_IN_DATABASE =
   "UPDATE_ASSIGNEE_FOR_ISSUE_IN_DATABASE";
+
+// action to update  reqStatusReturnedFromServer: "", reqMessageReturnedFromServer: null,
+export const UPDATE_REQ_INFO_RETURNED_FROM_SERVER =
+  "UPDATE_REQ_INFO_RETURNED_FROM_SERVER";
