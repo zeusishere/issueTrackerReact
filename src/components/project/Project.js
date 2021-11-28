@@ -31,6 +31,7 @@ import { Tooltip } from "react-bootstrap";
 import TooltipForMembers from "./TooltipForMembers";
 import StatusChangeComponent from "./StatusChangeComponent";
 import IssueTypeSelector from "./public/IssueTypeSelector";
+import PaginationComponent from "./PaginationComponent";
 
 function Project(props) {
   // get id of project from url params
@@ -74,26 +75,49 @@ function Project(props) {
     setIssueType(event.target.value);
     console.log("textcontent is ssd ", event.target.value.trim());
   };
+
+  // pagination  starts
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  let totalPages = issues && Math.ceil(issues.length / itemsPerPage);
+  let issuesOnCurrentPage =
+    issues && issues.slice(indexOfFirstItem, indexOfLastItem);
+  console.log("$$$$$$$$$$$$$$$$$$$$$$$ ", issuesOnCurrentPage);
+  // pagination logic ends
+
   // issue filtering logic
-  if (issues) {
+  if (issuesOnCurrentPage) {
+    // (issues)
     areIssuesPresent = issues.length > 0 ? true : false;
     switch (status) {
       case "open":
-        issues = issues.filter((issue) => issue.issueStatus === "Open");
+        issuesOnCurrentPage = issuesOnCurrentPage.filter(
+          (issue) => issue.issueStatus === "Open"
+        );
         break;
       case "closed":
-        issues = issues.filter((issue) => issue.issueStatus === "Closed");
+        issuesOnCurrentPage = issuesOnCurrentPage.filter(
+          (issue) => issue.issueStatus === "Closed"
+        );
         break;
     }
     switch (issueType) {
       case "Security":
-        issues = issues.filter((issue) => issue.label === "Security");
+        issuesOnCurrentPage = issuesOnCurrentPage.filter(
+          (issue) => issue.label === "Security"
+        );
         break;
       case "Bug":
-        issues = issues.filter((issue) => issue.label === "Bug");
+        issuesOnCurrentPage = issuesOnCurrentPage.filter(
+          (issue) => issue.label === "Bug"
+        );
         break;
       case "Task":
-        issues = issues.filter((issue) => issue.label === "Task");
+        issuesOnCurrentPage = issuesOnCurrentPage.filter(
+          (issue) => issue.label === "Task"
+        );
         break;
     }
   }
@@ -183,9 +207,13 @@ function Project(props) {
         </Col>
         {/* <Col></Col> */}
       </Row>
-
+      {/* changed here issue to issuesOnCurrentPage */}
       {areIssuesPresent && (
-        <Row id="yoyo">
+        <Row
+          id="yoyo"
+          className="border border-dark"
+          style={{ minHeight: "600px" }}
+        >
           <Table hover size="sm">
             <thead>
               <tr>
@@ -201,9 +229,8 @@ function Project(props) {
               </tr>
             </thead>
             <tbody>
-              {/*  */}
               {issues &&
-                issues.map((issue, index) => {
+                issuesOnCurrentPage.map((issue, index) => {
                   return (
                     <tr key={issue._id}>
                       <td className="text-center">{index + 1}</td>
@@ -260,6 +287,13 @@ function Project(props) {
             </tbody>
           </Table>
         </Row>
+      )}
+      {areIssuesPresent && (
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+        ></PaginationComponent>
       )}
     </Container>
   );
