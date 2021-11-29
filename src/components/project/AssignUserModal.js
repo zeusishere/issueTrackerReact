@@ -12,29 +12,29 @@ class AssignUserModal extends Component {
       isMouseOver: false,
     };
   }
+  // fn handles closing of modal on screen
   handleClose = () => {
     console.log("handle close ", this.state);
     this.setState({
       show: false,
-      formError: false,
-      usersSelectedToAddToProject: [],
-      usersFromDB: [],
     });
   };
+  // fn  displays modal on screen
   handleShow = () => {
     this.setState({ show: true });
   };
 
+  //  changes the assigne for the issue
   updateNewIssueAssigneeOnChange = (event) => {
     this.setState({ newIssueAssignee: event.target.value });
   };
-  //   start here
+
   onSubmitUpdateIssueOnServer = () => {
-    console.log(" this.props.IssueID ", this.props.issueID);
     this.props.dispatch(
       updateIssueInDatabase(this.state.newIssueAssignee, this.props.issueID)
     );
   };
+  //  below two fns are used to implement hover effect to show visual change
   onMouseEnterSetIsMouseOverToTrue = () => {
     this.setState({ isMouseOver: true });
   };
@@ -42,7 +42,6 @@ class AssignUserModal extends Component {
     this.setState({ isMouseOver: false });
   };
   render() {
-    console.log("props are ", this.state);
     let { projectMembers } = this.props.currentProject;
     let { assignee } = this.props;
     return (
@@ -55,11 +54,6 @@ class AssignUserModal extends Component {
           onMouseEnter={this.onMouseEnterSetIsMouseOverToTrue}
           onMouseOut={this.onMouseExitSetIsMouseOverToFalse}
         >
-          {/* <span
-            className={
-              this.state.isMouseOver ? "bg-secondary text-light " : " "
-            }
-          > */}
           <div
             className={
               this.state.isMouseOver
@@ -82,10 +76,6 @@ class AssignUserModal extends Component {
               ^
             </div>
           </div>
-          {/* {this.props.assignee ? this.props.assignee.userName : "Assign User"}{" "} */}
-          {/* </span> */}
-
-          {/* {this.state.isMouseOver ? "^" : ""} */}
         </div>
 
         <Modal
@@ -100,20 +90,24 @@ class AssignUserModal extends Component {
               Assign a User
             </Modal.Title>
           </Modal.Header>
-          {/* form fields */}
           <Modal.Body className="mx-5">
-            {/* validation error */}
-            {this.state.formError ? (
+            {/* validation error from local component state*/}
+            {/* {this.state.formError ? (
               <p className="alert alert-danger py-2 text-center">
                 {this.state.formError}
               </p>
-            ) : null}
+            ) : null} */}
             <p className="text-capitalize">
               Currently assigned to : {assignee ? assignee.userName : " None"}
             </p>
             <Form.Select onChange={this.updateNewIssueAssigneeOnChange}>
-              {projectMembers.map((user) => {
-                return <option value={user._id}> {user.userName} </option>;
+              {projectMembers.map((user, index) => {
+                return (
+                  <option key={index} value={user._id}>
+                    {" "}
+                    {user.userName}{" "}
+                  </option>
+                );
               })}
             </Form.Select>
             <div className="text-center my-2">

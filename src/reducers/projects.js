@@ -1,6 +1,8 @@
+import { addCurrentProjectInDatabase } from "../actions/actionCreators/project";
 import {
   ADD_ALL_PROJECTS_FROM_DATABASE_TO_STORE,
   ADD_NEW_PROJECT_FROM_DATABASE_TO_STORE,
+  DELETE_PROJECT_FROM_STORE,
   GET_ALL_PROJECTS_FROM_DATABASE,
   UPDATE_CURRENT_PROJECT_IN_STORE,
   UPDATE_REQ_INFO_RETURNED_FROM_SERVER,
@@ -8,17 +10,7 @@ import {
 
 const initialProjectsState = {
   projects: [],
-  currentProject: {
-    //   createdAt: "",
-    //   label: [],
-    //   projectAuthor: "",
-    //   projectDescription: "",
-    //   projectMembers: [],
-    //   projectName: "",
-    //   updatedAt: "",
-    //   __v: 0,
-    //   _id: "",
-  },
+  currentProject: {},
   reqStatusReturnedFromServer: "",
   reqMessageReturnedFromServer: null,
 };
@@ -47,7 +39,15 @@ export default function projects(state = initialProjectsState, action) {
         reqStatusReturnedFromServer: action.reqStatus,
         reqMessageReturnedFromServer: action.reqMessage,
       };
-
+    case DELETE_PROJECT_FROM_STORE:
+      return {
+        ...state,
+        projects: [
+          ...state.projects.filter((project) => {
+            return project._id != action.projectID;
+          }),
+        ],
+      };
     default:
       return state;
   }

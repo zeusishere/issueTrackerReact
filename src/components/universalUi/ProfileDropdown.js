@@ -2,6 +2,7 @@ import React from "react";
 import { Dropdown } from "react-bootstrap";
 import man from "./man.png";
 function ProfileDropdown(props) {
+  // custom toggle control for dropdown menu
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <a
       href=""

@@ -1,7 +1,6 @@
 import "bootstrap/dist/css/bootstrap.css";
 import { Navbar, NavDropdown, Container, Nav } from "react-bootstrap";
 import React, { Component } from "react";
-// import { LinkContainer } from "react-router-bootstrap";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import { connect } from "react-redux";
 import Button from "@restart/ui/esm/Button";
@@ -16,22 +15,9 @@ class NavbarComponent extends Component {
   getProtectedLinks = (isLoggedIn) => {
     return isLoggedIn ? (
       <React.Fragment>
-        {/* <Nav.Link as={Link} to="/dashboard">
-          DashBoard
-        </Nav.Link> */}
         <Nav.Link as={Link} to="/all-projects">
           Projects
         </Nav.Link>
-        {/* <Nav.Link as={Link} to="/main">
-          Filters
-        </Nav.Link> */}
-        {/* <Nav.Link as={Link} to="/about">
-          +
-        </Nav.Link> */}
-        {/* <Nav.Link as={Link} to="/project/open">
-          project
-        </Nav.Link> */}
-        {/* <Nav.Link onClick={this.logOut}>Log Out</Nav.Link> */}
       </React.Fragment>
     ) : (
       <React.Fragment>
@@ -49,20 +35,12 @@ class NavbarComponent extends Component {
     const { auth } = this.props;
     return (
       <div>
-        {/* <About /> */}
-        {/* <Router> */}
         <Navbar bg="light" expand="md">
           <Container className=" pe-5">
             <Navbar.Brand>Issue Tracker</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="">
-                {/* <Nav.Link as={Link} to="/">
-                  Home
-                </Nav.Link> */}
-
-                {this.getProtectedLinks(auth.isLoggedin)}
-              </Nav>
+              <Nav className="">{this.getProtectedLinks(auth.isLoggedin)}</Nav>
               <Nav className="ms-auto">
                 {auth.isLoggedin ? (
                   <ProfileDropdown user={auth.user} logOut={this.logOut} />

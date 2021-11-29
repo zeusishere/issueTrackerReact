@@ -1,4 +1,4 @@
-const API_ROOT = "http://localhost:8000";
+const API_ROOT = "https://glacial-castle-79733.herokuapp.com"; //"http://localhost:8000";
 export const APIUrls = {
   login: () => `${API_ROOT}/user/sign-in`,
   signup: () => `${API_ROOT}/user/sign-up`,
@@ -18,5 +18,11 @@ export const APIUrls = {
   },
   updateAssigneeOnIssue: () => {
     return `${API_ROOT}/issue/update-issue-assignee`;
+  },
+  deleteProjectFromServerDB: (projectID) => {
+    return `${API_ROOT}/project/delete/?projectID=${projectID}`;
+  },
+  updateStatusOnIssue: () => {
+    return `${API_ROOT}/issue/update-issue-status`;
   },
 };

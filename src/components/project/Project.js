@@ -40,27 +40,25 @@ function Project(props) {
   let currentProject = useSelector((state) => {
     return state.projects.currentProject;
   });
-  // let currentUser = useSelector((state) => {
-  //   return state.userAuth.user;
-  // });
+  //  acessing redux-store data and dispatch
   let dispatch = useDispatch();
   let auth = useSelector((state) => {
     return state.userAuth;
   });
+  // get logged in user and id
   let currentUser = auth.user;
   let currentUserId = currentUser ? currentUser._id : null;
 
-  // if current project is empty ,   fetch current project from the server
+  // if current project is empty ,  fetch current project from the server
   if (Object.keys(currentProject).length === 0 || currentProject._id !== id) {
-    console.log("current project is acada {} ", currentProject);
     // dispatching an action to get project and update it in the store
     dispatch(getCurrentProjectFromDatabase(id));
   }
-  // projectAuthorId and current signed in user id
+  // projectAuthorId and project  author id
   const projectAuthorId = currentProject.projectAuthor
     ? currentProject.projectAuthor._id
     : null;
-  console.log("current user id is @@@@@@@@@@@@", currentProject);
+  // gets all issues from redux store for the project which is currently open
   let issues = currentProject.issues;
   let areIssuesPresent;
   // set up state for issueStatus . this is used to filter out issues to display
@@ -69,27 +67,24 @@ function Project(props) {
   // changes issueStatus to display desirable issues on screen
   let onClickSwitchStatus = (event) => {
     setStatus(event.target.value);
-    console.log("textcontent is  ", event.target.value.trim());
   };
   let onClickSwitchIssueType = (event) => {
     setIssueType(event.target.value);
-    console.log("textcontent is ssd ", event.target.value.trim());
   };
 
-  // pagination  starts
+  // pagination logic  starts
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   let totalPages = issues && Math.ceil(issues.length / itemsPerPage);
+  // stores the issues to be displayed on current page
   let issuesOnCurrentPage =
     issues && issues.slice(indexOfFirstItem, indexOfLastItem);
-  console.log("$$$$$$$$$$$$$$$$$$$$$$$ ", issuesOnCurrentPage);
   // pagination logic ends
 
   // issue filtering logic
   if (issuesOnCurrentPage) {
-    // (issues)
     areIssuesPresent = issues.length > 0 ? true : false;
     switch (status) {
       case "open":
@@ -121,13 +116,10 @@ function Project(props) {
         break;
     }
   }
+  // redirects to sign in page if user is not logged in
   if (auth && !auth.isLoggedin) {
-    console.log(
-      "singn in privRoutet $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ "
-    );
     return <Navigate to="/user/sign-in" />;
   }
-
   return (
     <Container style={{ marginTop: "16%" }}>
       <Row className="mb-2">
@@ -140,12 +132,7 @@ function Project(props) {
       </Row>
       <Row className="mb-2 mt-3 ms-1">
         <Col>
-          {/* <h5 className="text-muted d-inline-block text-capitalize">
-            Project Author :{" "}
-            {currentProject.projectAuthor &&
-              currentProject.projectAuthor.userName}
-          </h5> */}
-          <Badge rounded bg="dark" className="py-2 fs-6 text-capitalize">
+          <Badge bg="dark" className="py-2 fs-6 text-capitalize">
             Project Author :{" "}
             {currentProject.projectAuthor &&
               currentProject.projectAuthor.userName}
@@ -155,9 +142,12 @@ function Project(props) {
           <h5 className="text-muted d-inline-block">members :</h5>
           {currentProject.projectMembers &&
             currentProject.projectMembers.slice(0, 5).map((user, index) => {
-              console.log("name is========", user.userName);
               return (
-                <div style={{ display: "inline-block" }} className="mx-1">
+                <div
+                  key={index}
+                  style={{ display: "inline-block" }}
+                  className="mx-1"
+                >
                   <TooltipForMembers
                     tooltipMessage={user.userName}
                     key={index}
@@ -199,93 +189,81 @@ function Project(props) {
               />
             </div>
           )}
-          {console.log("aaaaaaaaaaaaaaaaaaaaa", currentUserId, projectAuthorId)}
           {projectAuthorId == currentUserId && (
             <AddUserToProject projectID={id} />
           )}
           <AddNewIssue projectID={id} />
         </Col>
-        {/* <Col></Col> */}
       </Row>
-      {/* changed here issue to issuesOnCurrentPage */}
       {areIssuesPresent && (
         <Row
           id="yoyo"
-          className="border border-dark"
-          style={{ minHeight: "600px" }}
+          className="border border-dark mb-3"
+          style={{ minHeight: "480px" }}
         >
-          <Table hover size="sm">
-            <thead>
-              <tr>
-                <th className="text-center">#</th>
-                <th className="text-center">Issue Type</th>
-                <th className="text-center">Issue</th>
-                <th className="text-center">Assignee</th>
-                <th className="text-center">Status</th>
-                <th className="text-center">Priority</th>
-                <th className="text-center">Created</th>
-                <th className="text-center">Due Date</th>
-                <th className="text-center">Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              {issues &&
-                issuesOnCurrentPage.map((issue, index) => {
-                  return (
-                    <tr key={issue._id}>
-                      <td className="text-center">{index + 1}</td>
-                      <td className="text-center ">
-                        <Badge
-                          pill
-                          bg={
-                            issue.label === "Security"
-                              ? "danger"
-                              : issue.label === "Bug"
-                              ? "warning"
-                              : "success"
-                          }
-                        >
-                          {issue.label}
-                        </Badge>
-                      </td>
-                      <td className="text-center">{issue.issueName}</td>
-                      <td className="text-center">
-                        {/* {issue.issueAssignee.userName} */}
-                        <AssignUserModal
-                          assignee={issue.issueAssignee}
-                          issueID={issue._id}
-                        />
-                      </td>
-                      <td className="text-center  ">
-                        {/* <Form.Select size="sm" className=" ">
-                          <option value={`${issue.issueStatus}`}>
-                            {issue.issueStatus}
-                          </option>
-                          <option
-                            value={
-                              issue.issueStatus == "Open" ? "Closed" : "Open"
+          <Col style={{ overflowX: "auto" }}>
+            <Table hover size="sm">
+              <thead>
+                <tr>
+                  <th className="text-center">#</th>
+                  <th className="text-center">Issue Type</th>
+                  <th className="text-center">Issue</th>
+                  <th className="text-center">Assignee</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-center">Priority</th>
+                  <th className="text-center">Created</th>
+                  <th className="text-center">Due Date</th>
+                  <th className="text-center">Author</th>
+                  <th className="text-center"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {issues &&
+                  issuesOnCurrentPage.map((issue, index) => {
+                    return (
+                      <tr key={issue._id}>
+                        <td className="text-center">{index + 1}</td>
+                        <td className="text-center ">
+                          <Badge
+                            pill
+                            bg={
+                              issue.label === "Security"
+                                ? "danger"
+                                : issue.label === "Bug"
+                                ? "warning"
+                                : "success"
                             }
                           >
-                            {issue.issueStatus == "Open" ? "Closed" : "Open"}
-                          </option>
-                        </Form.Select>{" "} */}
-                        <StatusChangeComponent issue={issue} />
-                      </td>
-                      <td className="text-center">{issue.issuePriority}</td>
-                      <td className="text-center">
-                        {new Date(issue.createdAt).toDateString()}
-                      </td>
-                      <td className="text-center">
-                        {new Date(issue.issueDueDate).toDateString()}
-                      </td>
-                      <td className="text-center text-capitalize">
-                        {issue.issueAuthor && issue.issueAuthor.userName}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </Table>
+                            {issue.label}
+                          </Badge>
+                        </td>
+                        <td className="text-center">{issue.issueName}</td>
+                        <td className="text-center">
+                          {/* {issue.issueAssignee.userName} */}
+                          <AssignUserModal
+                            assignee={issue.issueAssignee}
+                            issueID={issue._id}
+                          />
+                        </td>
+                        <td className="text-center  ">
+                          <StatusChangeComponent issue={issue} />
+                        </td>
+                        <td className="text-center">{issue.issuePriority}</td>
+                        <td className="text-center">
+                          {new Date(issue.createdAt).toDateString()}
+                        </td>
+                        <td className="text-center">
+                          {new Date(issue.issueDueDate).toDateString()}
+                        </td>
+                        <td className="text-center text-capitalize">
+                          {issue.issueAuthor && issue.issueAuthor.userName}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </Table>
+          </Col>
         </Row>
       )}
       {areIssuesPresent && (
@@ -293,6 +271,7 @@ function Project(props) {
           currentPage={currentPage}
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
+          className="mb-5"
         ></PaginationComponent>
       )}
     </Container>

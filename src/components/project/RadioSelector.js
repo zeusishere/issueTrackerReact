@@ -3,7 +3,6 @@ import { Badge } from "react-bootstrap";
 
 function RadioSelector(props) {
   let { onClickSwitchStatus } = props;
-  console.log("onchange", onClickSwitchStatus);
 
   return (
     <React.Fragment>

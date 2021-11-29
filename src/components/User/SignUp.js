@@ -57,7 +57,7 @@ class SignUp extends Component {
       return <Navigate to="/all-projects" />;
     }
     return (
-      <Container style={{ marginTop: "16%" }}>
+      <Container style={{ marginTop: "16%", marginBottom: "80px" }}>
         <Row>
           <h1 className="text-center mb-5 mt-3">
             Sign Up to keep a track of your Work !

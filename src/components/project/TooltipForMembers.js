@@ -3,7 +3,6 @@ import { Tooltip, OverlayTrigger, Button } from "react-bootstrap";
 import man from "./public/man.png";
 
 function TooltipForMembers(props) {
-  console.log("tooltip message ", props);
   const tooltipMessage = props.tooltipMessage;
   const renderTooltip = (props) => {
     return (

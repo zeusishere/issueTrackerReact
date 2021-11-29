@@ -28,19 +28,22 @@ class AddUserToProject extends Component {
       usersSelectedToAddToProject: [],
     };
   }
+  // fn handles closing of modal on screen
   handleClose = () => {
-    console.log("handle close ", this.state);
     this.setState({
       show: false,
       formError: false,
       usersSelectedToAddToProject: [],
       usersFromDB: [],
     });
+    // change reqStatus and message to default values
     this.props.dispatch(updateReqInfoReturnedFromServer("", ""));
   };
+  // fn  displays modal on screen
   handleShow = () => {
     this.setState({ show: true });
   };
+  // later move this to redux store
   getUsersFromDBOnClick = () => {
     let { email } = this.state;
     let jwtToken = localStorage.getItem("token");
@@ -54,41 +57,34 @@ class AddUserToProject extends Component {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          console.log(data);
-          this.setState({ usersFromDB: data.users }, () =>
-            console.log(this.state)
-          );
+          this.setState({ usersFromDB: data.users });
           if (data.users.length == 0)
             this.props.dispatch(
               updateReqInfoReturnedFromServer(
                 false,
-                "No users matching search query were found in the database  "
+                "No users matching the search query were found in the database  "
               )
             );
         }
       });
   };
-  // start from here
+  // controls selection of users to be sent to db to be added to project
   onClickToggleUserSelectedToAddToProject = (event) => {
     let _id = event.target.getAttribute("data-id");
     let { usersSelectedToAddToProject } = this.state;
     let userFoundAtIndex = usersSelectedToAddToProject.findIndex(
       (user_id) => user_id === _id
     );
-    console.log("userFoundAtIndex", userFoundAtIndex);
     if (userFoundAtIndex > -1) {
       usersSelectedToAddToProject.splice(userFoundAtIndex, 1);
-      this.setState({ usersSelectedToAddToProject }, () =>
-        console.log(this.state.usersSelectedToAddToProject)
-      );
+      this.setState({ usersSelectedToAddToProject });
     } else {
       usersSelectedToAddToProject.push(_id);
-      this.setState({ usersSelectedToAddToProject }, () =>
-        console.log(this.state.usersSelectedToAddToProject)
-      );
+      this.setState({ usersSelectedToAddToProject });
     }
     event.target.classList.toggle(selected);
   };
+  // send users  to the server
   onClickSendUsersSelectedToAddToProjectToServer = () => {
     let url = APIUrls.sendUsersSelectedToAddToProject();
     let jwtToken = localStorage.getItem("token");
@@ -103,7 +99,6 @@ class AddUserToProject extends Component {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("data", data);
         if (data.success) {
           this.props.dispatch(updateCurrentProjectInStore(data.project));
           this.props.dispatch(
@@ -112,20 +107,17 @@ class AddUserToProject extends Component {
         }
       });
   };
+  // this fn updates field value from html dom to local component state
   updateFieldOnUserinput = (event) => {
     let fieldName = event.target.getAttribute("name");
     console.log("fieldname ", fieldName);
     //  used es6 computed file name
-    this.setState({ [fieldName]: event.target.value }, () =>
-      console.log("state in addNewissue is ", this.state)
-    );
+    this.setState({ [fieldName]: event.target.value });
   };
   render() {
     let { usersFromDB } = this.state;
     let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
       this.props.reqStatusInfo;
-    // console.log("render::::: ", this.state);
-    // console.log("pid", this.props.projectID);
     return (
       <React.Fragment>
         <div className="text-end me-2 my-4">
@@ -145,7 +137,6 @@ class AddUserToProject extends Component {
               Add a New User
             </Modal.Title>
           </Modal.Header>
-          {/* form fields */}
           <Modal.Body className="mx-5">
             {/* validation error */}
             {this.state.formError ? (
@@ -153,6 +144,7 @@ class AddUserToProject extends Component {
                 {this.state.formError}
               </p>
             ) : null}
+            {/* status information from server displayed as updates for the req made informing status and message */}
             {reqStatusReturnedFromServer === true ? (
               <Alert variant="success" className="text-center mt-5">
                 Project Successfully Added To Database{" "}
@@ -183,33 +175,38 @@ class AddUserToProject extends Component {
                   search
                 </Button>
               </InputGroup>
-
-              <Table bordered hover>
-                <tbody>
-                  {usersFromDB &&
-                    usersFromDB.map((user) => {
-                      let { email, userName, _id } = user;
-                      return (
-                        <tr
-                          key={_id}
-                          onClick={(event) => {
-                            console.log(event.target.getAttribute("data-id"));
-                            this.onClickToggleUserSelectedToAddToProject(event);
-                          }}
-                        >
-                          <td
-                            data-id={_id}
-                            data-userName={userName}
-                            data-email={email}
+              <div
+                style={{ maxHeight: "150px", overflow: "auto" }}
+                className="mb-3"
+              >
+                <Table bordered hover>
+                  <tbody>
+                    {usersFromDB &&
+                      usersFromDB.map((user) => {
+                        let { email, userName, _id } = user;
+                        return (
+                          <tr
+                            key={_id}
+                            onClick={(event) => {
+                              console.log(event.target.getAttribute("data-id"));
+                              this.onClickToggleUserSelectedToAddToProject(
+                                event
+                              );
+                            }}
                           >
-                            {userName} ({email})
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  <tr></tr>
-                </tbody>
-              </Table>
+                            <td
+                              data-id={_id}
+                              data-userName={userName}
+                              data-email={email}
+                            >
+                              {userName} ({email})
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </Table>
+              </div>
               {usersFromDB.length > 0 && (
                 <div className="text-center">
                   <Button

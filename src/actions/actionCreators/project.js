@@ -6,6 +6,7 @@ import {
   UPDATE_CURRENT_PROJECT_IN_STORE,
   ADD_ISSUE_TO_PROJECT_IN_DATABASE,
   UPDATE_REQ_INFO_RETURNED_FROM_SERVER,
+  DELETE_PROJECT_FROM_STORE,
 } from "../actionTypes/project";
 import { getFormBody } from "../../helpers/utils";
 
@@ -120,6 +121,33 @@ export function addCurrentProjectInDatabase(issue, projectID) {
       });
   };
 }
+export function deleteProjectFromDatabase(projectID) {
+  return (dispatch) => {
+    let jwtToken = localStorage.getItem("token");
+    const url = APIUrls.deleteProjectFromServerDB(projectID);
+    fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: jwtToken,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: getFormBody({ projectID }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success) {
+          dispatch(deleteProjectFromStore(projectID));
+        }
+      });
+  };
+}
+export function deleteProjectFromStore(projectID) {
+  return {
+    type: DELETE_PROJECT_FROM_STORE,
+    projectID,
+  };
+}
 
 // update issue document on the server
 export function updateIssueInDatabase(issueAssignee, issueID) {
@@ -137,6 +165,26 @@ export function updateIssueInDatabase(issueAssignee, issueID) {
       .then((response) => response.json())
       .then((data) => {
         console.log("data is", data);
+        dispatch(updateCurrentProjectInStore(data.project));
+      });
+  };
+}
+
+export function updateStatusOfIssueOnserver(issueStatus, issueID) {
+  return (dispatch) => {
+    let jwtToken = localStorage.getItem("token");
+    let url = APIUrls.updateStatusOnIssue();
+    fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: jwtToken,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: getFormBody({ issueStatus, issueID }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("data is on patch", data);
         dispatch(updateCurrentProjectInStore(data.project));
       });
   };

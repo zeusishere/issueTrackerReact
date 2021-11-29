@@ -65,7 +65,7 @@ class SignIn extends Component {
           <h1 className="text-center mb-5 mt-3">Sign in to view your work !</h1>
         </Row>
         <Row>
-          <Col sm={{ span: 6, offset: 3 }}>
+          <Col sm={{ span: 8, offset: 2 }} lg={{ span: 6, offset: 3 }}>
             {/* validation error */}
             {this.state.formError ? (
               <p className="alert alert-danger py-2 text-center">

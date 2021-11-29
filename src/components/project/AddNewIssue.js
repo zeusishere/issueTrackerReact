@@ -17,18 +17,20 @@ class AddNewIssue extends Component {
       label: "Bug",
       issuePriority: "Normal",
       issueDueDate: "",
-      //   to be made functional later
       issueAssignee: "",
     };
   }
+  // fn handles closing of modal on screen
   handleClose = () => {
     // console.log("handle close ", this.state);
     this.setState({ show: false, formError: false });
     this.props.dispatch(updateReqInfoReturnedFromServer("", ""));
   };
+  // fn  displays modal on screen
   handleShow = () => {
     this.setState({ show: true });
   };
+  // this fn updates field value from html dom to local component state
   updateFieldOnUserinput = (event) => {
     let fieldName = event.target.getAttribute("name");
     //  used es6 computed file name
@@ -36,8 +38,9 @@ class AddNewIssue extends Component {
       console.log(this.state)
     );
   };
-
+  // submits form to server
   OnClickSubmitIssueDetailsToServer = () => {
+    // the fn prevents empty data from being submitted to the server
     let validateFormField = (formField) => {
       return formField.length > 0;
     };
@@ -73,6 +76,7 @@ class AddNewIssue extends Component {
         : this.setState({ formError: "Please enter valid details" });
   };
   render() {
+    // result of request send to the server ; to be displayed to user as updates
     let { reqStatusReturnedFromServer, reqMessageReturnedFromServer } =
       this.props.projects;
     return (
@@ -94,14 +98,15 @@ class AddNewIssue extends Component {
               Add a new Issue
             </Modal.Title>
           </Modal.Header>
-          {/* form fields */}
+
           <Modal.Body className="mx-5">
-            {/* validation error */}
+            {/* validation error from local component state*/}
             {this.state.formError ? (
               <p className="alert alert-danger py-2 text-center">
                 {this.state.formError}
               </p>
             ) : null}
+            {/* status information from server displayed as updates for the req made informing status and message */}
             {reqStatusReturnedFromServer === true ? (
               <Alert variant="success" className="text-center mt-5">
                 Project Successfully Added To Database{" "}

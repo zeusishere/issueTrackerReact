@@ -5,12 +5,10 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import MainContent from "./universalUi/MainContent";
 // component imports below this point
 import NavbarComponent from "./universalUi/NavbarComponent";
-import Sidebar from "./universalUi/Sidebar";
 import { connect } from "react-redux";
 import { authenticateUser } from "../actions/actionCreators/auth";
 class App extends Component {
   componentWillMount() {
-    console.log("First this called");
     const tokenFromLocalStorage = localStorage.getItem("token");
     if (tokenFromLocalStorage) {
       // console.log("app did mount token is ", jwt_decode(tokenFromLocalStorage));
